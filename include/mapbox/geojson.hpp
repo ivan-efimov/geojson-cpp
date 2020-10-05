@@ -1,5 +1,6 @@
 #pragma once
 
+#include <istream>
 #include <mapbox/geometry.hpp>
 #include <mapbox/feature.hpp>
 #include <mapbox/variant.hpp>
@@ -28,10 +29,13 @@ using feature_collection  = mapbox::feature::feature_collection<double>;
 // feature_collection.
 template <class T>
 T parse(const std::string &);
+template <class T>
+T parse(std::istream &);
 
 // Parse any GeoJSON type.
 using geojson = mapbox::util::variant<geometry, feature, feature_collection>;
 geojson parse(const std::string &);
+geojson parse(std::istream &);
 
 // Stringify inputs of known types. Instantiations are provided for geometry, feature, and
 // feature_collection.

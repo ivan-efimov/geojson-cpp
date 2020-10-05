@@ -7,6 +7,7 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/error/en.h>
+#include <rapidjson/istreamwrapper.h>
 
 #include <sstream>
 
@@ -287,7 +288,31 @@ feature parse<feature>(const std::string &);
 template <>
 feature_collection parse<feature_collection>(const std::string &);
 
+template <class T>
+T parse(std::istream &json) {
+    rapidjson_document d;
+    rapidjson::IStreamWrapper isw(json);
+    d.ParseStream(isw);
+    if (d.HasParseError()) {
+        std::stringstream message;
+        message << d.GetErrorOffset() << " - " << rapidjson::GetParseError_En(d.GetParseError());
+        throw error(message.str());
+    }
+    return convert<T>(d);
+}
+
+template <>
+geometry parse<geometry>(std::istream &);
+template <>
+feature parse<feature>(std::istream &);
+template <>
+feature_collection parse<feature_collection>(std::istream &);
+
 geojson parse(const std::string &json) {
+    return parse<geojson>(json);
+}
+
+geojson parse(std::istream &json) {
     return parse<geojson>(json);
 }
 
