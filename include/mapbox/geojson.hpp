@@ -31,11 +31,14 @@ template <class T>
 T parse(const std::string &);
 template <class T>
 T parse(std::istream &);
+template <class T>
+T parse(const std::vector<uint8_t> &);
 
 // Parse any GeoJSON type.
 using geojson = mapbox::util::variant<geometry, feature, feature_collection>;
 geojson parse(const std::string &);
 geojson parse(std::istream &);
+geojson parse(const std::vector<uint8_t> &);
 
 // Stringify inputs of known types. Instantiations are provided for geometry, feature, and
 // feature_collection.

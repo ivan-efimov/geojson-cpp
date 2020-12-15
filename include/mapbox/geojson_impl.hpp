@@ -308,12 +308,36 @@ feature parse<feature>(std::istream &);
 template <>
 feature_collection parse<feature_collection>(std::istream &);
 
+template <class T>
+T parse(const std::vector<uint8_t> &bytes) {
+    rapidjson_document d;
+    d.Parse(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+    if (d.HasParseError()) {
+        std::stringstream message;
+        message << d.GetErrorOffset() << " - " << rapidjson::GetParseError_En(d.GetParseError());
+        throw error(message.str());
+    }
+    return convert<T>(d);
+}
+
+template <>
+geometry parse<geometry>(const std::vector<uint8_t> &bytes);
+template <>
+feature parse<feature>(const std::vector<uint8_t> &bytes);
+template <>
+feature_collection parse<feature_collection>(const std::vector<uint8_t> &bytes);
+
+
 geojson parse(const std::string &json) {
     return parse<geojson>(json);
 }
 
 geojson parse(std::istream &json) {
     return parse<geojson>(json);
+}
+
+geojson parse(const std::vector<uint8_t>& bytes) {
+    return parse<geojson>(bytes);
 }
 
 geojson convert(const rapidjson_value &json) {
