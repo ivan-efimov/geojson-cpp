@@ -40,6 +40,9 @@ geojson parse(const std::string &);
 geojson parse(std::istream &);
 geojson parse(const std::vector<uint8_t> &);
 
+template <typename rapidjson_value_t>
+geojson from_json(const rapidjson_value_t &json);
+
 // Stringify inputs of known types. Instantiations are provided for geometry, feature, and
 // feature_collection.
 template <class T>

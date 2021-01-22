@@ -283,6 +283,11 @@ geojson convert<geojson>(const rapidjson_value &json) {
     return geojson{ convert<geometry>(json) };
 }
 
+template <>
+geojson from_json(const rapidjson_value &json) {
+    return convert<geojson>(json);
+}
+
 template <class T>
 T parse(const std::string &json) {
     rapidjson_document d;
