@@ -212,9 +212,23 @@ feature convert<feature>(const rapidjson_value &json) {
 
     feature result{ convert<geometry>(geom_itr->value) };
 
-    auto const &id_itr = json.FindMember("id");
-    if (id_itr != json_end) {
-        result.id = convert<identifier>(id_itr->value);
+    // Detect Airlay-like id: `_id: { oid: "id_here" }`
+    bool airlayIdIsPresent = false;
+    auto const &airlay_id_wrapper_itr = json.FindMember("_id");
+    if (airlay_id_wrapper_itr != json_end && airlay_id_wrapper_itr->value.IsObject()) {
+        auto const &airlay_id_wrapper = airlay_id_wrapper_itr->value.GetObject();
+        auto const &airlay_id_itr = airlay_id_wrapper.FindMember("$oid");
+        if (airlay_id_itr != json_end) {
+            result.id = convert<identifier>(airlay_id_itr->value);
+            airlayIdIsPresent = true;
+        }
+    }
+
+    if (!airlayIdIsPresent) {
+        auto const &id_itr = json.FindMember("id");
+        if (id_itr != json_end) {
+            result.id = convert<identifier>(id_itr->value);
+        }
     }
 
     auto const &prop_itr = json.FindMember("properties");
